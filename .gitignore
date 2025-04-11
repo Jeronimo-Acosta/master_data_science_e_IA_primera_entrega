@@ -16,3 +16,13 @@ __pycache__/
 
 # ==== VISUALIZACIÓN ====
 *.pdf
+
+# ==== ENTORNOS ====
+.venv/
+env/
+venv/
+Include/
+Lib/
+Scripts/
+share/
+*.egg-info
