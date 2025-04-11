@@ -18,20 +18,24 @@ FIGURES_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", 
 
 
 def run_stats() :
-    """
+    '''
     Realiza un análisis estadístico descriptivo e inferencial de los datasets. Calcula parámetros de
     tendencia central (media, mediana, moda) y de dispersión (rango, varianza, desviación estándar, 
     percentiles). Además, genera gráficos de histogramas, boxplots y KDE para cada variable numérica.
-    También realiza un análisis de correlación entre las variables y un análisis de regresión lineal
-    entre las variables de interés.
-    Aclaración: se realizan estas tareas para los seis datasets tal como están, por más de que no tenga
-    mucho sentido dada la estructura de lo mismos, a fin de cumplir con el enunciado. Por ejemplo, hay
-    vacunas que no se aplican en algunos países, simplemente porque las enfermedades que previenen
-    no son endémicas en esos países, como la fiebre amarilla, que es endémica en África y Sudamérica,
-    y por lo tanto arroja valores de cero en muchos países. Lo mismo sucede con muertes que podrían 
-    haberse evitado con la aplicación de la vacuna correspondiente. Lo que sí tiene más sentido, que
-    se desarrolla luego de este análisis, es un análisis similar pero agrupando por país y/o año.
-    """
+    También realiza un análisis de correlación entre las variables, un análisis de regresión lineal
+    entre las variables de interés y dos tests de hipótesis.
+    Aclaración: se realizan estas tareas para los seis datasets de entrada tal como están, por más de 
+    que no tenga mucho sentido, dada la estructura de lo mismos, a fin de cumplir con el enunciado. Por
+    ejemplo, hay vacunas que no se aplican en algunos países, simplemente porque las enfermedades que 
+    previenen no son endémicas en esos países, como la fiebre amarilla, que es endémica en África y 
+    Sudamérica, y por lo tanto arroja valores de cero en muchos países. Lo mismo sucede con muertes que
+    podrían haberse evitado con la aplicación de la vacuna correspondiente. Lo que sí tiene más sentido,
+    que se desarrolla luego en este mismo archivo, es un análisis similar pero agrupando por país y/o
+    año.
+    Al igual que en eda.py, son seis funciones de análisis estadístico, uno para cada 
+    dataset, pues la estructura de cada uno es similar pero no exactamente igual. Las seis funciones
+    de análisis estadístico son muy similares entre sí. 
+    '''
 
     # CARGA DE LOS DATASETS YA LIMPIOS
     vaccination_coverage = pd.read_csv(os.path.join(PROCESSED_PATH, 'vaccination_coverage_processed.csv'))
@@ -41,12 +45,6 @@ def run_stats() :
     literacy = pd.read_csv(os.path.join(PROCESSED_PATH, 'literacy_processed.csv'))
     gdp = pd.read_csv(os.path.join(PROCESSED_PATH, 'gdp_processed.csv'))
     
-    # Buscamos columnas parecidas
-    for col in preventable_deaths.columns:
-        if "muerte" in col.lower():
-            print(f"👀 Parecida: {col}")
-
-
     # LLAMADA A LAS FUNCIONES DE ESTADÍSTICA
     stats_vaccination_coverage(vaccination_coverage)
     stats_life_expectancy(life_expectancy)
@@ -61,14 +59,14 @@ def run_stats() :
 
 def stats_vaccination_coverage(vaccination_coverage) :
     """
-    Realiza un análisis estadístico descriptivo e inferencial de los datasets. Calcula parámetros de
-    tendencia central (media, mediana, moda) y de dispersión (rango, varianza, desviación estándar, 
-    percentiles)
+    Realiza un análisis estadístico descriptivo e inferencial, tanto al dataset como tal, así como 
+    al dataset agrupado según corresponda. Calcula parámetros de tendencia central (media, mediana, moda) y de dispersión (rango, varianza, desviación estándar, 
+    percentiles). Exporta como .png los gráficos a data/figures. 
     """
 
     # ANÁLISIS ESTADÍSTICO DESCRIPTIVO 
     ''' 
-    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA EN EL ARCHIVO MAIN.PY. SÓLO LO HAGO PARA
+    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA ARRIBA. SÓLO SE HACE PARA
     CUMPLIR CON EL ENUNCIADO. LO QUE SÍ TIENE SENTIDO ES UN ANÁLISIS SIMILAR AGRUPANDO, QUE SE HACE LUEGO 
     DEL ANÁLISIS SIN AGRUPAR.
     '''
@@ -212,7 +210,6 @@ def stats_vaccination_coverage(vaccination_coverage) :
     plt.tight_layout()
     plt.savefig(os.path.join(FIGURES_PATH, "IPV1_2019.png"))
     plt.close()
-    
 
     # ESPAÑA A LO LARGO DE LOS AÑOS
     plt.figure(figsize=(24, 6))
@@ -241,9 +238,9 @@ def stats_vaccination_coverage(vaccination_coverage) :
     plt.savefig(os.path.join(FIGURES_PATH, "IPV1_espana_historico.png"))
     plt.close()
     
-    # IMPUTACIÓN DE LOS VALORES NAN CON LA MEDIANA DE CADA COLUMNA,AGRUPADO POR PAÍS
+    # IMPUTACIÓN DE LOS VALORES NAN CON LA MEDIANA DE CADA COLUMNA, AGRUPADO POR PAÍS
     '''SE IMPUTA DE ESTA MANERA PORQUE LA DISTRIBUCIÓN DE LOS VALORES FALTANTES ES TOTALMENTE ALEATORIA.
-    NO ES NECESARIO PARA VISUALIZAR EN POWER BI, PERO SÍ PARA EL ANÁLISIS ESTADÍSTICO INFERENCIAL''' 
+    YA HECHO EL ANÁLISIS ESTADÍSTICO, SE EXPORTA PARA VISUALIZAR EN POWER BI SIN NULOS''' 
     vaccines = [col for col in vaccination_coverage.columns if col not in ['País', 'Año']]
     vaccination_coverage[vaccines] = vaccination_coverage[vaccines].transform(lambda x: x.fillna(x.median()))
 
@@ -258,19 +255,23 @@ def stats_vaccination_coverage(vaccination_coverage) :
 
     vaccination_coverage.isna().sum()
 
+    vaccination_coverage.to_csv(os.path.join(PROCESSED_PATH, 'vaccination_coverage_processed_sin_nulos.csv'), index=False)
+
     return vaccination_coverage
 
 
-    # ---------------------- ESTADÍSTICA DE LIFE_EXPECTANCY ----------------------
+# ---------------------- ESTADÍSTICA DE LIFE_EXPECTANCY ----------------------
 
-def stats_life_expectancy(life_expectancy) :
+def stats_life_expectancy(life_expectancy):
     '''
-    
+    Realiza un análisis estadístico descriptivo e inferencial, tanto al dataset como tal, así como 
+    al dataset agrupado según corresponda. Calcula parámetros de tendencia central (media, mediana, moda) y de dispersión (rango, varianza, desviación estándar, 
+    percentiles). Exporta como .png los gráficos a data/figures. 
     '''
     
     # ANÁLISIS ESTADÍSTICO DESCRIPTIVO 
     ''' 
-    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA EN EL ARCHIVO MAIN.PY. SÓLO LO HAGO PARA
+    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA ARRIBA. SÓLO SE HACE PARA
     CUMPLIR CON EL ENUNCIADO. LO QUE SÍ TIENE SENTIDO ES UN ANÁLISIS SIMILAR AGRUPANDO, QUE SE HACE LUEGO 
     DEL ANÁLISIS SIN AGRUPAR.
     '''
@@ -300,7 +301,7 @@ def stats_life_expectancy(life_expectancy) :
 
     # GRAFICO HISTOGRAMA, BOXPLOT Y KDE DE LA ESPERANZA DE VIDA
     ''' 
-    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA EN EL ARCHIVO MAIN.PY. SÓLO LO HAGO PARA
+    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA ARRIBA. SÓLO SE HACE PARA
     CUMPLIR CON EL ENUNCIADO. LO QUE SÍ TIENE SENTIDO ES UN ANÁLISIS SIMILAR AGRUPANDO, QUE SE HACE LUEGO 
     DEL ANÁLISIS SIN AGRUPAR.
     '''
@@ -427,14 +428,16 @@ def stats_life_expectancy(life_expectancy) :
 
 # ---------------------- ESTADÍSTICA DE PREVENTABLE_DEATHS ----------------------
 
-def stats_preventable_deaths(preventable_deaths) :
+def stats_preventable_deaths(preventable_deaths):
     '''
-
+    Realiza un análisis estadístico descriptivo e inferencial, tanto al dataset como tal, así como 
+    al dataset agrupado según corresponda. Calcula parámetros de tendencia central (media, mediana, moda) y de dispersión (rango, varianza, desviación estándar, 
+    percentiles). Exporta como .png los gráficos a data/figures. 
     '''
 
     # ANÁLISIS ESTADÍSTICO DESCRIPTIVO 
     ''' 
-    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA EN EL ARCHIVO MAIN.PY. SÓLO LO HAGO PARA
+    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA ARRIBA. SÓLO SE HACE PARA
     CUMPLIR CON EL ENUNCIADO. LO QUE SÍ TIENE SENTIDO ES UN ANÁLISIS SIMILAR AGRUPANDO, QUE SE HACE LUEGO 
     DEL ANÁLISIS SIN AGRUPAR.
     '''
@@ -464,7 +467,7 @@ def stats_preventable_deaths(preventable_deaths) :
     
     # GRAFICO HISTOGRAMA, BOXPLOT y KDE
     ''' 
-    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA EN EL ARCHIVO MAIN.PY. SÓLO LO HAGO PARA
+    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA ARRIBA. SÓLO SE HACE PARA
     CUMPLIR CON EL ENUNCIADO. LO QUE SÍ TIENE SENTIDO ES UN ANÁLISIS SIMILAR AGRUPANDO, QUE SE HACE LUEGO 
     DEL ANÁLISIS SIN AGRUPAR.
     '''
@@ -593,14 +596,17 @@ def stats_preventable_deaths(preventable_deaths) :
 
 # ---------------------- ESTADÍSTICA DE GDP ----------------------
 
-def stats_gdp(gdp) :
+def stats_gdp(gdp):
     '''
+    Realiza un análisis estadístico descriptivo e inferencial, tanto al dataset como tal, así como 
+    al dataset agrupado según corresponda. Calcula parámetros de tendencia central (media, mediana, moda) y de dispersión (rango, varianza, desviación estándar, 
+    percentiles). Exporta como .png los gráficos a data/figures. 
 
     '''
 
     # ANÁLISIS ESTADÍSTICO DESCRIPTIVO 
     ''' 
-    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA EN EL ARCHIVO MAIN.PY. SÓLO LO HAGO PARA
+    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA ARRIBA. SÓLO SE HACE PARA
     CUMPLIR CON EL ENUNCIADO. LO QUE SÍ TIENE SENTIDO ES UN ANÁLISIS SIMILAR AGRUPANDO, QUE SE HACE LUEGO 
     DEL ANÁLISIS SIN AGRUPAR.
     '''
@@ -630,7 +636,7 @@ def stats_gdp(gdp) :
 
     # GRÁFICO DE HISTOGRAMA, BOXPLOT Y KDE DEL PIB
     ''' 
-    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA EN EL ARCHIVO MAIN.PY. SÓLO LO HAGO PARA
+    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA ARRIBA. SÓLO SE HACE PARA
     CUMPLIR CON EL ENUNCIADO. LO QUE SÍ TIENE SENTIDO ES UN ANÁLISIS SIMILAR AGRUPANDO, QUE SE HACE LUEGO 
     DEL ANÁLISIS SIN AGRUPAR.
     '''
@@ -663,7 +669,7 @@ def stats_gdp(gdp) :
     plt.savefig(os.path.join(FIGURES_PATH, "PIB_global.png"))
     plt.close()
 
-    # ANÁLISIS ESTADÍSTICO DESCRIPTIVO PARA 'PIB per cápita a precios constantes' EN 2019 A NIVEL GLOBAL
+    # ANÁLISIS ESTADÍSTICO DESCRIPTIVO PARA 2019 A NIVEL GLOBAL
     gdp_col = "PIB per cápita a precios constantes"
     global_gdp_2019 = gdp[gdp['Año'] == 2019]
     values_gdp_2019 = global_gdp_2019[gdp_col]
@@ -758,14 +764,16 @@ def stats_gdp(gdp) :
 
 # ---------------------- ESTADÍSTICA DE LITERACY ----------------------
 
-def stats_literacy(literacy) :
+def stats_literacy(literacy):
     '''
-
+    Realiza un análisis estadístico descriptivo e inferencial, tanto al dataset como tal, así como 
+    al dataset agrupado según corresponda. Calcula parámetros de tendencia central (media, mediana, moda) y de dispersión (rango, varianza, desviación estándar, 
+    percentiles). Exporta como .png los gráficos a data/figures. 
     '''
 
     # ANÁLISIS ESTADÍSTICO DESCRIPTIVO
     ''' 
-    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA EN EL ARCHIVO MAIN.PY. SÓLO LO HAGO PARA
+    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA ARRIBA. SÓLO SE HACE PARA
     CUMPLIR CON EL ENUNCIADO. LO QUE SÍ TIENE SENTIDO ES UN ANÁLISIS SIMILAR AGRUPANDO, QUE SE HACE LUEGO 
     DEL ANÁLISIS SIN AGRUPAR.
     '''
@@ -797,7 +805,7 @@ def stats_literacy(literacy) :
 
     # GRÁFICO DE HISTOGRAMA, BOXPLOT Y KDE 
     ''' 
-    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA EN EL ARCHIVO MAIN.PY. SÓLO LO HAGO PARA
+    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA ARRIBA. SÓLO SE HACE PARA
     CUMPLIR CON EL ENUNCIADO. LO QUE SÍ TIENE SENTIDO ES UN ANÁLISIS SIMILAR AGRUPANDO, QUE SE HACE LUEGO 
     DEL ANÁLISIS SIN AGRUPAR.
     '''
@@ -924,14 +932,16 @@ def stats_literacy(literacy) :
 
 # ---------------------- ESTADÍSTICA DE CHILD_MORTALITY ----------------------
 
-def stats_child_mortality(child_mortality) :
+def stats_child_mortality(child_mortality):
     '''
-
+    Realiza un análisis estadístico descriptivo e inferencial, tanto al dataset como tal, así como 
+    al dataset agrupado según corresponda. Calcula parámetros de tendencia central (media, mediana, moda) y de dispersión (rango, varianza, desviación estándar, 
+    percentiles). Exporta como .png los gráficos a data/figures. 
     '''
 
     # HAGO ANÁLISIS ESTADÍSTICO DESCRIPTIVO 
     ''' 
-    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA EN EL ARCHIVO MAIN.PY. SÓLO LO HAGO PARA
+    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA ARRIBA. SÓLO SE HACE PARA
     CUMPLIR CON EL ENUNCIADO. LO QUE SÍ TIENE SENTIDO ES UN ANÁLISIS SIMILAR AGRUPANDO, QUE SE HACE LUEGO 
     DEL ANÁLISIS SIN AGRUPAR.
     '''
@@ -962,7 +972,7 @@ def stats_child_mortality(child_mortality) :
 
     # GRÁFICO DE HISTOGRAMA, BOXPLOT Y KDE 
     ''' 
-    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA EN EL ARCHIVO MAIN.PY. SÓLO LO HAGO PARA
+    NO TIENE MUCHO SENTIDO HACERLO SIN AGRUPAR, COMO SE EXPLICA ARRIBA. SÓLO SE HACE PARA
     CUMPLIR CON EL ENUNCIADO. LO QUE SÍ TIENE SENTIDO ES UN ANÁLISIS SIMILAR AGRUPANDO, QUE SE HACE LUEGO 
     DEL ANÁLISIS SIN AGRUPAR.
     '''
@@ -1091,7 +1101,9 @@ def stats_child_mortality(child_mortality) :
 
 def stats_inferential(vaccination_coverage, life_expectancy, preventable_deaths, literacy, child_mortality, gdp) :
     '''
-    
+    Grafica la matriz de correlación entre las variables más representativas de los datasets. Realiza 
+    un análisis de regresión lineal entre distintas variables representativas de los datasets. 
+    Estudia los residuos. Exporta todas las gráficas como .png a data/figures.
     '''
     # MATRIZ DE CORRELACIÓN ENTRE INDICADORES GLOBALES CON HEATMAP (PERÍODO 1980-2019)
     years = list(range(1980, 2020))
@@ -1134,6 +1146,11 @@ def stats_inferential(vaccination_coverage, life_expectancy, preventable_deaths,
 
     # REGRESIÓN LINEAL
     def plot_regression(df, x_col, y_col, title, filename):
+        '''
+        Realiza un análisis de regresión lineal entre dos variables y exporta el gráfico como .png a
+        data/figures.
+        '''
+
         # REMOVER OUTLIERS USANDO Z-SCORE
         df_clean = df[[x_col, y_col]].copy()
         z_scores = np.abs(zscore(df_clean))
@@ -1158,6 +1175,8 @@ def stats_inferential(vaccination_coverage, life_expectancy, preventable_deaths,
         plt.savefig(os.path.join(FIGURES_PATH, filename))
         plt.close()
 
+
+    # ANÁLISIS DE REGRESIÓN LINEAL ENTRE VARIABLES
     plot_regression(df_corr, "Vacunación promedio (%)", "Esperanza de vida", "Esperanza de vida vs Tasa de vacunación", "regresion_vida_vacunacion.png")
     plot_regression(df_corr, "Vacunación promedio (%)", "Mortalidad infantil", "Mortalidad infantil vs Tasa de vacunación", "regresion_mortalidad_vacunacion.png")
     plot_regression(df_corr, "Vacunación promedio (%)", "Muertes prevenibles", "Muertes prevenibles vs Tasa de vacunación", "regresion_muertes_vacunacion.png")
@@ -1166,6 +1185,11 @@ def stats_inferential(vaccination_coverage, life_expectancy, preventable_deaths,
 
     # ESTUDIO DE RESIDUOS
     def plot_residue(df, x_col, y_col, title, filename_base):
+        '''
+        Estudia los resiudos de un modelo de regresión lineal entre dos variables y exporta los gráficos
+        como .png a data/figures.
+        '''
+
         # CREACIÓN DEL MODELO
         X = df[[x_col]]
         y = df[y_col]
@@ -1213,6 +1237,8 @@ def stats_inferential(vaccination_coverage, life_expectancy, preventable_deaths,
         plt.savefig(os.path.join(FIGURES_PATH, f"qqplot_{filename_base}.png"))
         plt.close()
 
+
+    # ESTUDIO DE RESIDUOS PARA DISTINTAS VARIABLES
     plot_residue(df_corr, "Vacunación promedio (%)", "Esperanza de vida", "Esperanza de vida vs Tasa de vacunación", "vida_vacunacion")
     plot_residue(df_corr, "Vacunación promedio (%)", "Mortalidad infantil", "Mortalidad infantil vs Tasa de vacunación", "mortalidad_vacunacion")
     plot_residue(df_corr, "Vacunación promedio (%)", "Muertes prevenibles", "Muertes prevenibles vs Tasa de vacunación", "muertes_vacunacion")
@@ -1240,8 +1266,10 @@ def stats_inferential(vaccination_coverage, life_expectancy, preventable_deaths,
     '''
 
     def test_hipotesis(df, x_col, y_col, descripcion):
-        '''Realiza un test de hipótesis para evaluar la relación entre dos variables.'''
-        
+        '''
+        Realiza un test de hipótesis para evaluar la relación entre dos variables.
+        '''
+
         print(f"\nTEST DE HIPÓTESIS: {descripcion}")
 
         X = df[[x_col]]
@@ -1267,5 +1295,6 @@ def stats_inferential(vaccination_coverage, life_expectancy, preventable_deaths,
         else:
             print("  Conclusión: El efecto no es estadísticamente significativo (no se rechaza H0).")
 
+    # SE TESTEAN POR SEPARADO LAS DOS HIPÓTESIS NULAS
     test_hipotesis(df_corr, "Vacunación promedio (%)", "Esperanza de vida", "Vacunación sobre Esperanza de vida")
     test_hipotesis(df_corr, "Vacunación promedio (%)", "Mortalidad infantil", "Vacunación sobre Mortalidad infantil")

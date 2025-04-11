@@ -1,8 +1,10 @@
 def run_eda() :
     """
-    Limpia y transforma los datasets. Se eliminan filas y columnas innecesarias, se 
-    traducen los nombres de los países al español y se exportan los datasets procesados como CSV
-    a data/processed.
+    Limpia y transforma los datasets. Consiste en seis funciones, una función para cada dataset, pues 
+    la morfología de cada dataset no es exactamente igual. Sin embargo, las seis funciones son muy 
+    similares entre sí. Se eliminan filas y columnas innecesarias y se traducen los nombres de los 
+    países al español. Se exportan los datasets procesados como CSV a data/processed y devuelve los 
+    datasets ya limpios. 
     """
     
     import pandas as pd
@@ -20,7 +22,7 @@ def run_eda() :
     literacy = datasets["literacy"]
     gdp = datasets["gdp"]
 
-    # DEFINICIÓN DE DIRECTORIOS PARA POSTERIOR EXPORTACIÓN DE ARCHIVOS
+    # RUTA BASE RELATIVA DESDE EL ARCHIVO ACTUAL (SRC/EDA.PY) HACIA DATA/PROCESSED
     BASE_DIR = os.path.dirname(os.path.dirname(__file__))
     PROCESSED_PATH = os.path.join(BASE_DIR, "data", "processed")
 
@@ -52,7 +54,11 @@ def run_eda() :
 
  # ---------------------- EXPLORACIÓN DE VACCINES_COVERAGE ----------------------
 
-def eda_vaccination_coverage(vaccination_coverage):    
+def eda_vaccination_coverage(vaccination_coverage):
+    '''
+    Realiza el EDA ya explicado para vaccination_coverage.
+    '''    
+
     print(vaccination_coverage.head(10000))
     print(vaccination_coverage.info())
 
@@ -145,6 +151,10 @@ def eda_vaccination_coverage(vaccination_coverage):
 # ---------------------- EXPLORACIÓN DE LIFE_EXPECTANCY ----------------------
 
 def eda_life_expectancy(life_expectancy):
+    '''
+    Realiza el EDA ya explicado para life_expectancy.
+    '''
+
     print(life_expectancy.head(10000)) 
     print(life_expectancy.info()) 
 
@@ -244,6 +254,10 @@ def eda_life_expectancy(life_expectancy):
 # ---------------------- EXPLORACIÓN DE PREVENTABLE_DEATHS ----------------------
 
 def eda_preventable_deaths(preventable_deaths):
+    '''
+    Realiza el EDA ya explicado para preventable_deaths.
+    '''
+
     print(preventable_deaths.head(10000)) 
     print(preventable_deaths.info()) 
 
@@ -322,6 +336,10 @@ def eda_preventable_deaths(preventable_deaths):
 # ---------------------- EXPLORACIÓN DE GDP ----------------------
 
 def eda_gdp(gdp):
+    '''
+    Realiza el EDA ya explicado para gdp.
+    '''
+
     print(gdp.head(10000)) 
     print(gdp.info()) 
     for column in gdp.columns: 
@@ -412,6 +430,10 @@ def eda_gdp(gdp):
 # ---------------------- EXPLORACIÓN DE LITERACY ----------------------
 
 def eda_literacy(literacy):
+    '''
+    Realiza el EDA ya explicado para literacy.
+    '''
+
     print(literacy.head(10000)) 
     print(literacy.info()) 
 
@@ -492,6 +514,10 @@ def eda_literacy(literacy):
 # ---------------------- EXPLORACIÓN DE CHILD_MORTALITY ----------------------
 
 def eda_child_mortality(child_mortality):
+    '''
+    Realiza el EDA ya explicado para child_mortality.
+    '''
+    
     print(child_mortality.head(10000)) 
     print(child_mortality.info()) 
 
@@ -509,7 +535,7 @@ def eda_child_mortality(child_mortality):
     # ELIMINACIÓN DE LA COLUMNA "CODE"
     child_mortality.drop(columns=['Code'], inplace=True) 
 
-    # TRADUCCIÓN Y REEMPLAZO DE LOS NOMBRES DE PAÍSES
+    # TRADUCCIÓN Y REEMPLAZO DE LOS NOMBRES DE PAÍSES AL ESPAÑOL
     country_translation_dict = {
         'Afghanistan': 'Afganistán', 'Albania': 'Albania', 'Algeria': 'Argelia', 'Andorra': 'Andorra', 'Angola': 'Angola',
         'Anguilla': 'Anguila', 'Antigua and Barbuda': 'Antigua y Barbuda', 'Argentina': 'Argentina', 'Armenia': 'Armenia',
@@ -566,10 +592,3 @@ def eda_child_mortality(child_mortality):
     child_mortality.isna().sum() 
 
     return child_mortality
-
-
-
-
-
-
-
