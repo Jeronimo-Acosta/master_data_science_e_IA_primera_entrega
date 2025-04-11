@@ -26,3 +26,4 @@ Lib/
 Scripts/
 share/
 *.egg-info
+pyvenv.cfg
